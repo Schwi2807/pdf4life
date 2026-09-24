@@ -660,3 +660,190 @@ def zip_files(paths, zip_path):
         for p in paths:
             z.write(p, os.path.basename(p))
     return zip_path
+
+
+# ---------------------------------------------------------------- security
+
+def protect(path, out_path, user_pw="", owner_pw="", allow_print=True,
+            allow_copy=True, allow_edit=True, allow_annotate=True):
+    """Encrypt with AES-256. user_pw opens the file; owner_pw lifts the
+    permission restrictions (defaults to user_pw when not given)."""
+    if not user_pw and not owner_pw:
+        raise ValueError("Enter a password.")
+    owner_pw = owner_pw or user_pw
+    perm = fitz.PDF_PERM_ACCESSIBILITY
+    if allow_print:
+        perm |= fitz.PDF_PERM_PRINT | fitz.PDF_PERM_PRINT_HQ
+    if allow_copy:
+        perm |= fitz.PDF_PERM_COPY
+    if allow_edit:
+        perm |= fitz.PDF_PERM_MODIFY | fitz.PDF_PERM_ASSEMBLE
+    if allow_annotate:
+        perm |= fitz.PDF_PERM_ANNOTATE | fitz.PDF_PERM_FORM
+    doc = fitz.open(path)
+    if doc.needs_pass:
+        raise ValueError("This PDF is already password protected - unlock it first.")
+    doc.save(out_path, garbage=3, deflate=True,
+             encryption=fitz.PDF_ENCRYPT_AES_256,
+             owner_pw=owner_pw, user_pw=user_pw, permissions=perm)
+    doc.close()
+
+
+def unlock(path, out_path, password=""):
+    """Remove the password / permission restrictions (password required)."""
+    doc = fitz.open(path)
+    if not doc.is_encrypted:
+        doc.close()
+        raise ValueError("This PDF is not password protected.")
+    if doc.needs_pass or password:
+        # authenticate() returns 0 on failure, 2/4/6 for user/owner access
+        if not doc.authenticate(password or ""):
+            doc.close()
+            raise ValueError("Wrong password.")
+    doc.save(out_path, garbage=3, deflate=True, encryption=fitz.PDF_ENCRYPT_NONE)
+    doc.close()
+
+
+# ---------------------------------------------------------------- metadata
+
+META_KEYS = ("title", "author", "subject", "keywords", "creator", "producer")
+
+
+def get_metadata(path):
+    with fitz.open(path) as doc:
+        m = doc.metadata or {}
+        info = {k: m.get(k) or "" for k in META_KEYS}
+        info["_pages"] = doc.page_count
+        info["_format"] = m.get("format") or ""
+        info["_created"] = m.get("creationDate") or ""
+        info["_modified"] = m.get("modDate") or ""
+        info["_encryption"] = m.get("encryption") or ""
+        return info
+
+
+def set_metadata(path, out_path, values, strip=False):
+    """Write document info. strip=True removes all metadata (incl. XMP)."""
+    doc = fitz.open(path)
+    if strip:
+        doc.set_metadata({})
+        doc.del_xml_metadata()
+    else:
+        m = dict(doc.metadata or {})
+        for k in META_KEYS:
+            if k in values:
+                m[k] = str(values[k] or "").strip()
+        m["modDate"] = fitz.get_pdf_now()
+        doc.set_metadata(m)
+    save_small(doc, out_path)
+
+
+def extract_images(path, out_dir, page_spec="", min_px=32):
+    """Save every embedded image (original encoding where possible).
+    Images reused on several pages are written once."""
+    doc = fitz.open(path)
+    stem = Path(path).stem
+    seen, outputs = set(), []
+    for pno in pages_from_spec(page_spec, doc.page_count):
+        for n, info in enumerate(doc[pno].get_images(full=True), 1):
+            xref = info[0]
+            if xref in seen:
+                continue
+            seen.add(xref)
+            try:
+                img = doc.extract_image(xref)
+            except Exception:
+                continue
+            if not img or min(img.get("width", 0), img.get("height", 0)) < min_px:
+                continue
+            data, ext = img["image"], img.get("ext", "png")
+            if info[1]:  # has an soft mask (transparency) - composite to PNG
+                try:
+                    pix = fitz.Pixmap(doc, xref)
+                    mask = fitz.Pixmap(doc, info[1])
+                    pix = fitz.Pixmap(pix, mask)
+                    if pix.colorspace and pix.colorspace.n > 3:
+                        pix = fitz.Pixmap(fitz.csRGB, pix)
+                    data, ext = pix.tobytes("png"), "png"
+                except Exception:
+                    pass
+            if ext not in ("png", "jpg", "jpeg", "jpx", "bmp", "tiff", "gif"):
+                pix = fitz.Pixmap(doc, xref)
+                if pix.colorspace and pix.colorspace.n > 3:
+                    pix = fitz.Pixmap(fitz.csRGB, pix)
+                data, ext = pix.tobytes("png"), "png"
+            f = os.path.join(out_dir, f"{stem}_p{pno+1}_img{n}.{ext}")
+            Path(f).write_bytes(data)
+            outputs.append(f)
+    doc.close()
+    if not outputs:
+        raise ValueError("No embedded images found on the selected pages.")
+    return outputs
+
+
+# ---------------------------------------------------------------- OCR
+
+def find_tessdata():
+    """Locate Tesseract's tessdata folder, or None when Tesseract is missing."""
+    cands = [os.environ.get("TESSDATA_PREFIX")]
+    for base in (os.environ.get("ProgramFiles", r"C:\Program Files"),
+                 os.environ.get("ProgramFiles(x86)", r"C:\Program Files (x86)"),
+                 os.environ.get("LOCALAPPDATA", "")):
+        if base:
+            cands.append(os.path.join(base, "Tesseract-OCR", "tessdata"))
+            cands.append(os.path.join(base, "Programs", "Tesseract-OCR", "tessdata"))
+    try:
+        cands.append(fitz.get_tessdata())
+    except Exception:
+        pass
+    cands += ["/usr/share/tesseract-ocr/5/tessdata", "/usr/share/tesseract-ocr/4.00/tessdata",
+              "/usr/share/tessdata", "/opt/homebrew/share/tessdata", "/usr/local/share/tessdata"]
+    for c in cands:
+        if c and os.path.isfile(os.path.join(c, "eng.traineddata")):
+            return c
+        if c and os.path.isdir(c) and any(f.endswith(".traineddata") for f in os.listdir(c)):
+            return c
+    return None
+
+
+def ocr_languages():
+    td = find_tessdata()
+    if not td:
+        return None
+    return sorted(f[:-12] for f in os.listdir(td)
+                  if f.endswith(".traineddata") and f[:-12] != "osd")
+
+
+def ocr_pdf(path, out_path, language="eng", dpi=300, skip_text=True, page_spec=""):
+    """Add an invisible, searchable text layer on top of scanned pages.
+    The visible page content is left untouched (no re-rasterizing).
+    Returns the number of pages OCR'd."""
+    td = find_tessdata()
+    if not td:
+        raise RuntimeError(
+            "Tesseract OCR is not installed. Install it (Windows installer: "
+            "github.com/UB-Mannheim/tesseract/wiki) and restart PDF4life.")
+    doc = fitz.open(path)
+    done = 0
+    for pno in pages_from_spec(page_spec, doc.page_count):
+        page = doc[pno]
+        if skip_text and page.get_text("text").strip():
+            continue
+        tp = page.get_textpage_ocr(language=language or "eng", dpi=int(dpi),
+                                   full=True, tessdata=td)
+        for x0, y0, x1, y1, word, *_ in page.get_text("words", textpage=tp):
+            w, h = x1 - x0, y1 - y0
+            if w <= 0 or h <= 0 or not word.strip():
+                continue
+            size = min(h * 0.95, w / max(fitz.get_text_length(word, "helv", 1), 1e-3))
+            try:
+                page.insert_text((x0, y1 - h * 0.2), word, fontname="helv",
+                                 fontsize=max(size, 1), render_mode=3)
+            except Exception:
+                pass
+        done += 1
+    if done == 0:
+        doc.close()
+        raise ValueError("Every selected page already has text - nothing to OCR. "
+                         "Untick 'Skip pages that already have text' to force it.")
+    save_small(doc, out_path)
+    return done

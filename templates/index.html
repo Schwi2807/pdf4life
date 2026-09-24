@@ -8,6 +8,8 @@
 :root{
   --bg:#f6f7f9; --card:#ffffff; --ink:#1b1f24; --muted:#6b7280;
   --accent:#e5484d; --accent-soft:#fdecec; --ok:#18794e; --line:#e5e7eb;
+  --field:#ffffff; --soft:#fafbfc; --line2:#cfd4dc;
+  --ok-bg:#f0faf4; --ok-line:#bde5cc; --ok-ink:#356b4d; --err-bg:#fdf0f0; --err-line:#f2c4c6; --err-ink:#a13236;
   --radius:14px; --shadow:0 1px 3px rgba(16,24,40,.08),0 4px 14px rgba(16,24,40,.06);
 }
 *{box-sizing:border-box}
@@ -37,13 +39,13 @@ h1{font-size:22px;margin:6px 0 2px}
 .toolhead p{margin:0;color:var(--muted);font-size:13px}
 .panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
   padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
-.drop{border:2px dashed #cfd4dc;border-radius:12px;padding:34px 20px;text-align:center;
-  color:var(--muted);cursor:pointer;transition:.15s;background:#fafbfc}
+.drop{border:2px dashed var(--line2);border-radius:12px;padding:34px 20px;text-align:center;
+  color:var(--muted);cursor:pointer;transition:.15s;background:var(--soft)}
 .drop.small{padding:18px}
 .drop:hover,.drop.over{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
 .drop b{color:var(--ink)}
 .filelist{margin-top:12px;display:flex;flex-direction:column;gap:8px}
-.chip{display:flex;align-items:center;gap:10px;background:#fafbfc;border:1px solid var(--line);
+.chip{display:flex;align-items:center;gap:10px;background:var(--soft);border:1px solid var(--line);
   border-radius:10px;padding:8px 12px;font-size:13.5px}
 .chip .meta{color:var(--muted);font-size:12px;margin-left:auto;white-space:nowrap}
 .chip button{border:none;background:none;cursor:pointer;font-size:15px;color:var(--muted)}
@@ -53,25 +55,25 @@ h1{font-size:22px;margin:6px 0 2px}
 .field{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted)}
 .field input[type=text],.field input[type=number],.field select{
   border:1px solid var(--line);border-radius:9px;padding:8px 10px;font-size:14px;min-width:110px;
-  background:#fff;color:var(--ink)}
-.field input[type=color]{border:1px solid var(--line);border-radius:9px;height:37px;width:56px;padding:2px;background:#fff}
+  background:var(--field);color:var(--ink)}
+.field input[type=color]{border:1px solid var(--line);border-radius:9px;height:37px;width:56px;padding:2px;background:var(--field)}
 .field input[type=range]{width:140px}
 .check{display:flex;gap:7px;align-items:center;font-size:13.5px;color:var(--ink)}
 .btn{background:var(--accent);color:#fff;border:none;border-radius:10px;padding:11px 22px;
   font-size:15px;font-weight:600;cursor:pointer;transition:.15s}
 .btn:hover{filter:brightness(.93)}
 .btn:disabled{opacity:.55;cursor:wait}
-.btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--line);font-weight:500}
+.btn.ghost{background:var(--field);color:var(--ink);border:1px solid var(--line);font-weight:500}
 .btn.ghost:hover{border-color:var(--accent);color:var(--accent)}
 .btn.sm{padding:6px 12px;font-size:13px;border-radius:8px}
 .actions{margin-top:18px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.result{margin-top:16px;display:none;background:#f0faf4;border:1px solid #bde5cc;border-radius:12px;
+.result{margin-top:16px;display:none;background:var(--ok-bg);border:1px solid var(--ok-line);border-radius:12px;
   padding:14px 16px}
-.result.err{background:#fdf0f0;border-color:#f2c4c6}
+.result.err{background:var(--err-bg);border-color:var(--err-line)}
 .result a.dl{display:inline-flex;gap:8px;align-items:center;background:var(--ok);color:#fff;
   border-radius:9px;padding:9px 18px;text-decoration:none;font-weight:600;margin-top:8px}
-.result .note{color:#356b4d;font-size:13px}
-.result.err .note{color:#a13236}
+.result .note{color:var(--ok-ink);font-size:13px}
+.result.err .note{color:var(--err-ink)}
 .spin{display:inline-block;width:15px;height:15px;border:2px solid #fff;border-top-color:transparent;
   border-radius:50%;animation:sp .7s linear infinite;vertical-align:-2px;margin-right:7px}
 @keyframes sp{to{transform:rotate(360deg)}}
@@ -90,13 +92,13 @@ h1{font-size:22px;margin:6px 0 2px}
 .hint{font-size:13px;color:var(--muted);margin:8px 0}
 /* organize */
 .pages{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;margin-top:14px}
-.pg{background:#fafbfc;border:1px solid var(--line);border-radius:10px;padding:8px;text-align:center;
+.pg{background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:8px;text-align:center;
   cursor:grab;position:relative}
 .pg.drag{opacity:.35}
-.pg img{max-width:100%;border:1px solid var(--line);border-radius:4px;background:#fff;transition:transform .2s}
+.pg img{max-width:100%;border:1px solid var(--line);border-radius:4px;background:var(--field);transition:transform .2s}
 .pg .num{font-size:12px;color:var(--muted);margin-top:4px}
 .pg .ops{display:flex;justify-content:center;gap:6px;margin-top:5px}
-.pg .ops button{border:1px solid var(--line);background:#fff;border-radius:6px;cursor:pointer;
+.pg .ops button{border:1px solid var(--line);background:var(--field);border-radius:6px;cursor:pointer;
   font-size:12px;padding:2px 7px}
 .pg .ops button:hover{border-color:var(--accent);color:var(--accent)}
 .pg.deleted img{opacity:.25}
@@ -104,7 +106,7 @@ h1{font-size:22px;margin:6px 0 2px}
   font-weight:700;font-size:13px}
 /* editor */
 .edbar{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0;align-items:center}
-.edbar .eb{border:1px solid var(--line);background:#fff;border-radius:9px;padding:7px 12px;
+.edbar .eb{border:1px solid var(--line);background:var(--field);border-radius:9px;padding:7px 12px;
   cursor:pointer;font-size:13px;white-space:nowrap}
 .edbar .eb.on{background:var(--accent);border-color:var(--accent);color:#fff}
 .edbar .sep{width:1px;height:26px;background:var(--line);margin:0 4px}
@@ -114,37 +116,67 @@ h1{font-size:22px;margin:6px 0 2px}
 .edsvg.selmode .op:hover{filter:drop-shadow(0 0 3px #e5484d)}
 .spanbox{position:absolute;cursor:text;border-radius:2px}
 .spanbox:hover{outline:2px solid #4a90d9;background:rgba(74,144,217,.14)}
-.txted{position:absolute;background:#fff;border:2px solid var(--accent);border-radius:8px;
+.txted{position:absolute;background:var(--field);border:2px solid var(--accent);border-radius:8px;
   padding:8px;box-shadow:0 6px 20px rgba(0,0,0,.25);z-index:10;min-width:220px}
 .txted textarea{width:100%;border:1px solid var(--line);border-radius:6px;padding:6px;
   font:inherit;resize:both;min-height:40px;box-sizing:border-box}
 .txted .tbtns{display:flex;gap:6px;margin-top:6px;justify-content:flex-end}
 /* signature pad */
-.sigpad{border:1px dashed #cfd4dc;border-radius:10px;background:#fff;touch-action:none;cursor:crosshair}
+.sigpad{border:1px dashed var(--line2);border-radius:10px;background:var(--field);touch-action:none;cursor:crosshair}
 .tabbtns{display:flex;gap:8px;margin-bottom:14px}
-.tabbtns .tb{border:1px solid var(--line);background:#fff;border-radius:99px;padding:7px 16px;
+.tabbtns .tb{border:1px solid var(--line);background:var(--field);border-radius:99px;padding:7px 16px;
   cursor:pointer;font-size:13.5px}
 .tabbtns .tb.on{background:var(--accent);border-color:var(--accent);color:#fff}
 .formfields{display:flex;flex-direction:column;gap:10px;margin-top:12px}
-.ffrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:#fafbfc;
+.ffrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:var(--soft);
   border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:13.5px}
 .ffrow label{min-width:160px;font-weight:600;overflow-wrap:anywhere}
 .ffrow input[type=text]{flex:1;min-width:160px;border:1px solid var(--line);border-radius:8px;padding:7px 9px}
 .ffrow .ft{color:var(--muted);font-size:12px}
 footer{padding:24px;text-align:center;color:var(--muted);font-size:12.5px}
+/* dark theme */
+:root[data-theme=dark]{
+  --bg:#111418; --card:#1a1e24; --ink:#e6e8eb; --muted:#9aa3ae; --line:#2c323a; --line2:#3a414b;
+  --accent-soft:#3a1d20; --ok:#2f9e6a; --field:#20252c; --soft:#1e232a;
+  --ok-bg:#15271e; --ok-line:#28553d; --ok-ink:#8fd3ae; --err-bg:#2c1718; --err-line:#5c2a2d; --err-ink:#f0a3a6;
+  --shadow:0 1px 3px rgba(0,0,0,.4),0 4px 14px rgba(0,0,0,.3);
+  color-scheme:dark;
+}
+:root[data-theme=dark] .vwrap img,:root[data-theme=dark] .pg img{background:#fff}
+.hbtn{border:1px solid var(--line);background:var(--field);color:var(--ink);border-radius:9px;
+  padding:6px 10px;cursor:pointer;font-size:15px}
+.hbtn:hover{border-color:var(--accent)}
+.homebar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:18px}
+.homebar input{flex:1;min-width:200px;max-width:360px;border:1px solid var(--line);border-radius:10px;
+  padding:9px 12px;font-size:14px;background:var(--field);color:var(--ink)}
+.recent{margin-top:28px}
+.recent h2{font-size:16px;margin:0 0 10px;display:flex;align-items:center;gap:10px}
+.recent .ritem{display:flex;gap:10px;align-items:center;background:var(--card);border:1px solid var(--line);
+  border-radius:10px;padding:8px 12px;font-size:13.5px;margin-bottom:6px}
+.recent .ritem a{color:var(--ok);font-weight:600;text-decoration:none}
+.recent .ritem .meta{color:var(--muted);font-size:12px;margin-left:auto;white-space:nowrap}
+.card .tagnew{font-size:10px;background:var(--accent);color:#fff;border-radius:99px;padding:1px 7px;
+  vertical-align:2px;margin-left:6px}
 </style>
 </head>
 <body>
 <header>
   <div class="logo" onclick="goHome()"><span class="badge">PDF</span>PDF<span class="life">4life</span></div>
   <div style="margin-left:auto;color:var(--muted);font-size:13px">All processing stays on this computer</div>
+  <button class="hbtn" id="themebtn" title="Toggle dark mode" onclick="toggleTheme()">&#127769;</button>
 </header>
 
 <main>
   <div id="home">
     <h1>What would you like to do?</h1>
     <p class="sub">Pick a tool. Files never leave your laptop.</p>
+    <div class="homebar"><input id="toolsearch" type="search" placeholder="Search tools…  (press / to focus)"></div>
     <div class="grid" id="cards"></div>
+    <div class="recent" id="recent" style="display:none">
+      <h2>Recent results <button class="btn ghost sm" onclick="clearRecent()">Clear</button></h2>
+      <div id="recentlist"></div>
+      <p class="hint">Results are kept on this computer for 24 hours.</p>
+    </div>
   </div>
 
   <div id="toolview">
@@ -221,7 +253,7 @@ function dropzone(opts){
     files.forEach((m,i)=>{
       const chip = el("div", {class:"chip", draggable: opts.reorder?"true":"false"},
         el("span",{html:"&#128196;"}), m.name,
-        el("span",{class:"meta"}, (m.pages?m.pages+" pages · ":"")+fmtSize(m.size)),
+        el("span",{class:"meta"}, (m.encrypted?"🔒 locked · ":"")+(m.pages?m.pages+" pages · ":"")+fmtSize(m.size)),
         el("button",{title:"remove", html:"&#10005;", onclick:()=>{files.splice(i,1);render();opts.onchange&&opts.onchange(files);}}));
       if (opts.reorder){
         chip.addEventListener("dragstart",()=>{chip.classList.add("drag");chip._i=i;list._src=i;});
@@ -245,7 +277,7 @@ function dropzone(opts){
 function resultBox(){
   const box = el("div",{class:"result"});
   return {box,
-    ok(res){ box.className="result"; box.style.display="block";
+    ok(res){ box.className="result"; box.style.display="block"; addRecent(res);
       box.innerHTML = `<b>Done!</b> ${res.note?'<span class="note">'+res.note+'</span>':""}<br>
         <a class="dl" href="${res.download}">&#8595; Download ${res.name}</a>`; },
     err(msg){ box.className="result err"; box.style.display="block";
@@ -347,16 +379,72 @@ const TOOLS = [
  ["compare","&#128269;","Compare PDFs","Highlight differences between two files"],
  ["forms","&#128203;","PDF Forms","Detect, fill or create form fields"],
  ["pdf2md","&#128220;","PDF → Markdown","Extract structured text as .md"],
+ ["protect","&#128274;","Protect PDF","Add a password (AES-256) and permissions",1],
+ ["unlock","&#128275;","Unlock PDF","Remove a password you know",1],
+ ["ocr","&#128065;","OCR PDF","Make scanned PDFs searchable & copyable",1],
+ ["metadata","&#127991;","Metadata","View, edit or strip title, author, keywords",1],
+ ["extractimg","&#127912;","Extract images","Save every embedded image",1],
 ];
 const BUILDERS = {};
 
-$("#cards").append(...TOOLS.map(([id,ico,name,desc])=>
-  el("div",{class:"card",onclick:()=>openTool(id)},
-    el("div",{class:"ico",html:ico}), el("h3",{},name), el("p",{},desc))));
+$("#cards").append(...TOOLS.map(([id,ico,name,desc,isNew])=>
+  el("div",{class:"card","data-q":(name+" "+desc).toLowerCase(),onclick:()=>openTool(id)},
+    el("div",{class:"ico",html:ico}),
+    el("h3",{},name,isNew?el("span",{class:"tagnew"},"new"):null), el("p",{},desc))));
 
-function goHome(){ $("#home").style.display="block"; $("#toolview").style.display="none"; }
+/* ---------------------------------------------------------- search, theme, recent */
+function store(k,v){ try{ if(v===undefined) return localStorage.getItem(k);
+  if(v===null) localStorage.removeItem(k); else localStorage.setItem(k,v);}catch(e){ return null; } }
+$("#toolsearch").addEventListener("input",e=>{
+  const q=e.target.value.trim().toLowerCase();
+  for(const c of document.querySelectorAll("#cards .card"))
+    c.style.display = !q || c.dataset.q.includes(q) ? "" : "none";
+});
+$("#toolsearch").addEventListener("keydown",e=>{
+  if(e.key!=="Enter") return;
+  const c=[...document.querySelectorAll("#cards .card")].find(c=>c.style.display!=="none");
+  if(c) c.click();
+});
+document.addEventListener("keydown",e=>{
+  if(e.key==="/" && $("#home").style.display!=="none" && document.activeElement.tagName!=="INPUT"){
+    e.preventDefault(); $("#toolsearch").focus(); }
+  if(e.key==="Escape" && $("#toolview").style.display==="block" && !document.querySelector(".txted")) goHome();
+});
+function applyTheme(t){
+  document.documentElement.dataset.theme=t;
+  $("#themebtn").innerHTML = t==="dark" ? "&#9728;" : "&#127769;";
+}
+function toggleTheme(){
+  const t = document.documentElement.dataset.theme==="dark" ? "light" : "dark";
+  applyTheme(t); store("pdf4life.theme",t);
+}
+applyTheme(store("pdf4life.theme") ||
+  (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"));
+
+let RECENT=[]; let currentTool="";
+try{ RECENT = JSON.parse(store("pdf4life.recent")||"[]")
+  .filter(r=>Date.now()-r.t < 24*3600e3); }catch(e){ RECENT=[]; }
+function addRecent(res){
+  RECENT = RECENT.filter(r=>r.download!==res.download);
+  RECENT.unshift({download:res.download,name:res.name,size:res.size,tool:currentTool,t:Date.now()});
+  RECENT = RECENT.slice(0,12); store("pdf4life.recent",JSON.stringify(RECENT)); renderRecent();
+}
+function clearRecent(){ RECENT=[]; store("pdf4life.recent",null); renderRecent(); }
+function renderRecent(){
+  $("#recent").style.display = RECENT.length ? "" : "none";
+  const list=$("#recentlist"); list.innerHTML="";
+  for(const r of RECENT){
+    const when=new Date(r.t).toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"});
+    list.append(el("div",{class:"ritem"}, el("span",{html:"&#128196;"}),
+      el("a",{href:r.download,title:"Download again"}, r.name),
+      el("span",{class:"meta"}, [r.tool, r.size?fmtSize(r.size):"", when].filter(Boolean).join(" · "))));
+  }
+}
+renderRecent();
+
+function goHome(){ $("#home").style.display="block"; $("#toolview").style.display="none"; renderRecent(); }
 function openTool(id){
-  const t = TOOLS.find(t=>t[0]===id);
+  const t = TOOLS.find(t=>t[0]===id); currentTool = t[2];
   $("#home").style.display="none"; $("#toolview").style.display="block";
   $("#ttitle").textContent=t[2]; $("#tdesc").textContent=t[3];
   const body=$("#tbody"); body.innerHTML="";
@@ -377,7 +465,8 @@ function simpleTool(body, cfg){
   btn.onclick = ()=>{
     if (!dz.files.length) return alert("Add a file first.");
     if (cfg.min && dz.files.length<cfg.min) return alert(`Need at least ${cfg.min} files.`);
-    runOp(btn,res,()=>cfg.run(dz.files, extra()));
+    let x; try{ x = extra(); }catch(e){ return alert(e.message); }
+    runOp(btn,res,()=>cfg.run(dz.files, x));
   };
   return dz;
 }
@@ -432,6 +521,116 @@ BUILDERS.jpg2pdf = body => simpleTool(body,{kind:"image",multiple:true,
 
 BUILDERS.pdf2md = body => simpleTool(body,{button:"Convert to Markdown",label:"Drop a PDF",
   run:f=>post("/api/pdf2md",{id:f[0].id})});
+
+BUILDERS.protect = body => simpleTool(body,{button:"Protect PDF",label:"Drop a PDF",
+  controls(row){
+    const pw=el("input",{type:"password",placeholder:"required",autocomplete:"new-password"});
+    const pw2=el("input",{type:"password",placeholder:"repeat",autocomplete:"new-password"});
+    const own=el("input",{type:"password",placeholder:"optional",autocomplete:"new-password"});
+    for(const i of [pw,pw2,own]) i.style.cssText="border:1px solid var(--line);border-radius:9px;padding:8px 10px;font-size:14px;background:var(--field);color:var(--ink)";
+    const cb=(label)=>{const c=el("input",{type:"checkbox",checked:""}); return [c, el("label",{class:"check"},c,label)];};
+    const [pr,prL]=cb("Allow printing"), [cp,cpL]=cb("Allow copying text"),
+          [ed,edL]=cb("Allow editing"), [an,anL]=cb("Allow comments & form filling");
+    row.append(field("Password to open",pw),field("Confirm password",pw2),
+      field("Owner password (unlocks restrictions)",own),
+      el("div",{style:"display:flex;flex-wrap:wrap;gap:16px;width:100%"},prL,cpL,edL,anL));
+    return ()=>{
+      if(!pw.value) throw new Error("Enter a password.");
+      if(pw.value!==pw2.value) throw new Error("Passwords do not match.");
+      return {user_pw:pw.value,owner_pw:own.value,allow_print:pr.checked,allow_copy:cp.checked,
+              allow_edit:ed.checked,allow_annotate:an.checked};
+    };
+  },
+  run:(f,x)=>post("/api/protect",{id:f[0].id,...x})});
+
+BUILDERS.unlock = body => simpleTool(body,{button:"Unlock PDF",label:"Drop a password-protected PDF",
+  controls(row){
+    const pw=el("input",{type:"password",placeholder:"the file's password",autocomplete:"off"});
+    pw.style.cssText="border:1px solid var(--line);border-radius:9px;padding:8px 10px;font-size:14px;background:var(--field);color:var(--ink)";
+    row.append(field("Password",pw),
+      el("p",{class:"hint",style:"margin:0"},"Only for files you own or have the password to. Files that only restrict printing/copying can be unlocked with an empty password."));
+    return ()=>({password:pw.value});
+  },
+  run:(f,x)=>post("/api/unlock",{id:f[0].id,...x})});
+
+BUILDERS.extractimg = body => simpleTool(body,{button:"Extract images",label:"Drop a PDF",
+  controls(row){
+    const pg=pageSpecInput();
+    const min=el("select",{},el("option",{value:"1"},"Keep everything"),
+      el("option",{value:"32",selected:""},"Skip tiny icons (< 32 px)"),
+      el("option",{value:"150"},"Only large images (≥ 150 px)"));
+    row.append(field("Pages",pg),field("Filter",min));
+    return ()=>({pages:pg.value,min_px:+min.value});
+  },
+  run:(f,x)=>post("/api/extract_images",{id:f[0].id,...x})});
+
+BUILDERS.ocr = body => {
+  const status=el("p",{class:"hint"},"Checking for Tesseract OCR…");
+  body.append(status);
+  const dz = simpleTool(body,{button:"Make searchable",label:"Drop a scanned PDF",
+    controls(row){
+      const lang=el("select",{},el("option",{value:"eng"},"eng"));
+      const dpi=el("select",{},el("option",{value:"200"},"200 (faster)"),
+        el("option",{value:"300",selected:""},"300 (accurate)"),el("option",{value:"400"},"400 (tiny text)"));
+      const pg=pageSpecInput();
+      const skip=el("input",{type:"checkbox",checked:""});
+      row.append(field("Language",lang),field("Scan resolution",dpi),field("Pages",pg),
+        el("label",{class:"check"},skip,"Skip pages that already have text"));
+      fetch("/api/ocr/status").then(r=>r.json()).then(j=>{
+        if(!j.available){
+          status.innerHTML='<b style="color:var(--accent)">Tesseract OCR is not installed.</b> '+
+            'Install it from <a href="https://github.com/UB-Mannheim/tesseract/wiki" target="_blank">UB-Mannheim/tesseract</a> '+
+            '(tick extra languages in the installer if needed), then restart PDF4life.';
+          return;
+        }
+        status.textContent="Adds an invisible text layer so you can search, select and copy text. The page looks exactly the same.";
+        lang.innerHTML=""; for(const l of j.languages) lang.append(el("option",{value:l},l));
+        lang.value = j.languages.includes("eng") ? "eng" : j.languages[0];
+        lang.multiple = false;
+        if(j.languages.length>1){
+          const combo=el("input",{type:"text",placeholder:"e.g. eng+msa",size:"10"});
+          combo.style.cssText="border:1px solid var(--line);border-radius:9px;padding:8px 10px;font-size:14px;background:var(--field);color:var(--ink)";
+          row.insertBefore(field("…or combine",combo), row.children[1]);
+          lang._combo=combo;
+        }
+      }).catch(()=>{});
+      return ()=>({lang:(lang._combo&&lang._combo.value.trim())||lang.value,dpi:+dpi.value,
+                   pages:pg.value,skip_text:skip.checked});
+    },
+    run:(f,x)=>post("/api/ocr",{id:f[0].id,...x})});
+  return dz;
+};
+
+BUILDERS.metadata = body => {
+  const res=resultBox();
+  const inputs={}; const info=el("p",{class:"hint"});
+  const grid=el("div",{class:"row",style:"display:none"});
+  for(const k of ["title","author","subject","keywords","creator","producer"]){
+    const i=el("input",{type:"text",size:"28"}); inputs[k]=i;
+    grid.append(field(k[0].toUpperCase()+k.slice(1),i));
+  }
+  const strip=el("input",{type:"checkbox"});
+  strip.onchange=()=>{ for(const i of Object.values(inputs)) i.disabled=strip.checked; };
+  const btn=el("button",{class:"btn"},"Save metadata");
+  let file=null;
+  const dz=dropzone({label:"Drop a PDF",async onchange(files){
+    file=files[0]||null; grid.style.display=file?"flex":"none"; info.textContent="";
+    if(!file) return;
+    try{
+      const m=await post("/api/metadata/get",{id:file.id});
+      for(const k in inputs) inputs[k].value=m[k]||"";
+      const d=s=>{const x=/D:(\d{4})(\d{2})(\d{2})(\d{2})?(\d{2})?/.exec(s||""); return x?`${x[1]}-${x[2]}-${x[3]}`+(x[4]?` ${x[4]}:${x[5]||"00"}`:""):"—";};
+      info.textContent=`${m._format||"PDF"} · ${m._pages} page(s) · created ${d(m._created)} · modified ${d(m._modified)}`+(m._encryption?` · ${m._encryption}`:"");
+    }catch(e){ res.err(e.message); }
+  }});
+  btn.onclick=()=>{
+    if(!file) return alert("Add a file first.");
+    const values={}; for(const k in inputs) values[k]=inputs[k].value;
+    runOp(btn,res,()=>post("/api/metadata/set",{id:file.id,values,strip:strip.checked}));
+  };
+  body.append(dz.root,info,grid,el("div",{class:"row"},el("label",{class:"check"},strip,"Remove all metadata (privacy clean-up)")),
+    el("div",{class:"actions"},btn),res.box);
+};
 
 BUILDERS.pagenum = body => simpleTool(body,{button:"Add page numbers",label:"Drop a PDF",
   controls(row){

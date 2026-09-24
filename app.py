@@ -415,6 +415,87 @@ def op_pdf2md():
     return result(j["id"], out)
 
 
+@app.post("/api/protect")
+@api
+def op_protect():
+    j = request.json
+    path, meta = stored_input(j["id"])
+    d = job_dir(j["id"])
+    out = d / "out" / f"{Path(meta['name']).stem}_protected.pdf"
+    pdf_ops.protect(str(path), str(out), user_pw=j.get("user_pw", ""),
+                    owner_pw=j.get("owner_pw", ""),
+                    allow_print=bool(j.get("allow_print", True)),
+                    allow_copy=bool(j.get("allow_copy", True)),
+                    allow_edit=bool(j.get("allow_edit", True)),
+                    allow_annotate=bool(j.get("allow_annotate", True)))
+    return result(j["id"], out, note="AES-256 encrypted")
+
+
+@app.post("/api/unlock")
+@api
+def op_unlock():
+    j = request.json
+    path, meta = stored_input(j["id"])
+    d = job_dir(j["id"])
+    out = d / "out" / f"{Path(meta['name']).stem}_unlocked.pdf"
+    pdf_ops.unlock(str(path), str(out), j.get("password", ""))
+    return result(j["id"], out, note="Password and restrictions removed")
+
+
+@app.post("/api/metadata/get")
+@api
+def op_meta_get():
+    path, _ = stored_input(request.json["id"])
+    return jsonify(pdf_ops.get_metadata(str(path)))
+
+
+@app.post("/api/metadata/set")
+@api
+def op_meta_set():
+    j = request.json
+    path, meta = stored_input(j["id"])
+    d = job_dir(j["id"])
+    out = d / "out" / f"{Path(meta['name']).stem}_meta.pdf"
+    pdf_ops.set_metadata(str(path), str(out), j.get("values", {}),
+                         strip=bool(j.get("strip")))
+    return result(j["id"], out, note="All metadata removed" if j.get("strip") else None)
+
+
+@app.post("/api/extract_images")
+@api
+def op_extract_images():
+    j = request.json
+    path, meta = stored_input(j["id"])
+    d = job_dir(j["id"])
+    files = pdf_ops.extract_images(str(path), str(d / "out"), j.get("pages", ""),
+                                   int(j.get("min_px", 32)))
+    if len(files) == 1:
+        return result(j["id"], files[0])
+    z = pdf_ops.zip_files(files, str(d / "out" / f"{Path(meta['name']).stem}_images.zip"))
+    return result(j["id"], z, note=f"{len(files)} images inside")
+
+
+@app.get("/api/ocr/status")
+@api
+def op_ocr_status():
+    langs = pdf_ops.ocr_languages()
+    return jsonify({"available": langs is not None, "languages": langs or []})
+
+
+@app.post("/api/ocr")
+@api
+def op_ocr():
+    j = request.json
+    path, meta = stored_input(j["id"])
+    d = job_dir(j["id"])
+    out = d / "out" / f"{Path(meta['name']).stem}_ocr.pdf"
+    n = pdf_ops.ocr_pdf(str(path), str(out), language=j.get("lang", "eng"),
+                        dpi=int(j.get("dpi", 300)),
+                        skip_text=bool(j.get("skip_text", True)),
+                        page_spec=j.get("pages", ""))
+    return result(j["id"], out, note=f"{n} page(s) made searchable")
+
+
 # ---------------------------------------------------------------- startup
 
 def cleanup_old(hours=24):
