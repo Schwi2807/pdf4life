@@ -1,0 +1,61 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install Tesseract (for the OCR test)
+        run: sudo apt-get update && sudo apt-get install -y tesseract-ocr
+      - run: pip install -r requirements.txt pytest
+      - run: python -m pytest -q tests
+
+  windows-exe:
+    needs: test
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt pyinstaller
+      - name: Build PDF4life.exe
+        run: pyinstaller --noconfirm PDF4life.spec
+      - name: Smoke-test the exe starts
+        shell: pwsh
+        run: |
+          $env:PDF4LIFE_PORT = "8799"
+          $env:PDF4LIFE_NO_BROWSER = "1"
+          $p = Start-Process dist\PDF4life.exe -ArgumentList "--browser" -PassThru
+          $ok = $false
+          foreach ($i in 1..90) {
+            Start-Sleep 1
+            try { if ((Invoke-RestMethod http://127.0.0.1:8799/api/health).ok) { $ok = $true; break } } catch {}
+          }
+          Stop-Process $p -Force
+          if (-not $ok) { throw "exe did not answer /api/health" }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: PDF4life-windows
+          path: dist/PDF4life.exe
+      - name: Publish release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/PDF4life.exe
+          generate_release_notes: true
